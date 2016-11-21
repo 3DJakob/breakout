@@ -27,6 +27,8 @@ var brickPadding = 10
 var brickOffsetTop = 30
 var brickOffsetLeft = 30
 
+var score = 0
+
 var bricks = []
 for (var c = 0; c < brickColumnCount; c++) {
   bricks[c] = []
@@ -77,6 +79,7 @@ function collisionDetection () {
         if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
           dy = -dy
           b.status = 0
+          score += 1
         }
       }
     }
@@ -149,6 +152,12 @@ function draw () {
 
   // ctx.font = '20px sans-serif'
   // ctx.fillText('Speed: ' + paddleSpeed, 10, 30) // Speed not accurate?
+
+  ctx.font = '20px sans-serif'
+  ctx.fillText('Score: ' + score, 7, 23)
+  if (score === 15) {
+    window.alert('YOU WON!')
+  }
 }
 
 document.addEventListener('keydown', keyDownHandler, false)
