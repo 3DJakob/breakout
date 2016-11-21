@@ -155,8 +155,9 @@ function draw () {
 
   ctx.font = '20px sans-serif'
   ctx.fillText('Score: ' + score, 7, 23)
-  if (score === 15) {
+  if (score === brickRowCount * brickColumnCount) {
     window.alert('YOU WON!')
+    window.location.reload()
   }
 }
 
