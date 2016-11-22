@@ -1,13 +1,19 @@
 var canvas = document.getElementById('gameCanvas')
 var ctx = canvas.getContext('2d')
 
+var difficulty = 1
+
 // Ball variables
 var ballRadius = 10
 var x = canvas.width / 2
 var y = canvas.height - 30
-var dx = 2
-var dy = -2
-var currentSpeed = 2
+
+// 200 pixels per second
+var initialSpeed = (200 / 1000)
+var currentSpeed = initialSpeed
+
+var dx = currentSpeed
+var dy = -currentSpeed
 
 // Paddle variables
 var paddleHeight = 10
@@ -16,8 +22,15 @@ var paddleX = (canvas.width - paddleWidth) / 2
 var rightPressed = false
 var leftPressed = false
 var paddleSpeed = 0
-var paddleMaxSpeed = 3
-var paddleAcceleration = 0.5
+
+// 300 pixels per second
+var paddleMaxSpeed = (300 / 1000)
+
+// 8 pixels per second per second
+var paddleAcceleration = (8 / 1000)
+
+// 2 pixels per second per second
+var paddleRetardation = (2 / 1000)
 
 //  Brick variables
 var brickRowCount = 3
@@ -92,29 +105,29 @@ function collisionDetection () {
   }
 }
 
-function paddleMove () {
-  if (rightPressed && paddleX < canvas.width - paddleWidth) {
-    if (paddleSpeed < paddleMaxSpeed) {
-      paddleSpeed += paddleAcceleration
-    }
-    paddleX += paddleSpeed
-  } else if (leftPressed && paddleX > 0) {
-    if (paddleSpeed > -paddleMaxSpeed) {
-      paddleSpeed -= paddleAcceleration
-    }
-  } else {
+function paddleMove (dt) {
+  if (rightPressed) {
+    paddleSpeed = Math.min(paddleSpeed + paddleAcceleration * dt, paddleMaxSpeed)
+  }
+
+  if (leftPressed) {
+    paddleSpeed = Math.max(paddleSpeed - paddleAcceleration * dt, -paddleMaxSpeed)
+  }
+
+  if (!rightPressed && !leftPressed) {
     if (paddleSpeed > 0) {
-      paddleSpeed -= paddleAcceleration
+      paddleSpeed = Math.max(0, paddleSpeed - paddleRetardation * dt)
     } else if (paddleSpeed < 0) {
-      paddleSpeed += paddleAcceleration
+      paddleSpeed = Math.min(0, paddleSpeed + paddleRetardation * dt)
     }
   }
-  paddleX += paddleSpeed
+
+  paddleX = Math.min(Math.max(paddleX + paddleSpeed * dt, 0), canvas.width - paddleWidth)
 }
 
-function ballMove () {
-  x += dx
-  y += dy
+function ballMove (dt) {
+  x += dx * dt
+  y += dy * dt
 }
 
 function mouseMoveHandler (e) {
@@ -140,9 +153,9 @@ function wallBounce () {
       }
       x = canvas.width / 2
       y = canvas.height - 30
-      dx = 2
-      dy = -2
-      currentSpeed = 2
+      currentSpeed = initialSpeed
+      dx = currentSpeed
+      dy = -currentSpeed
       score = 0
     }
   }
@@ -182,7 +195,6 @@ function draw () {
   ctx.textAlign = 'center'
   ctx.font = '20px sans-serif'
   ctx.fillText('Score: ' + score, 43, 23)
-  var difficulty = currentSpeed - 1
   ctx.fillText('Difficulty: ' + difficulty, 150, 23)
   if (score === brickRowCount * brickColumnCount) {
     ctx.fillText('YOU WON!', canvas.width / 2, canvas.height / 2)
@@ -199,7 +211,10 @@ function draw () {
       }
       x = canvas.width / 2
       y = canvas.height - 50
-      currentSpeed = currentSpeed + 1
+
+      // Add 100 pixels per second to the speed
+      currentSpeed = currentSpeed + (100 / 1000)
+
       dx = currentSpeed
       dy = -currentSpeed
       score = 0
@@ -207,13 +222,21 @@ function draw () {
   }
 }
 
-function gameLoop () {
-  paddleMove()
-  ballMove()
-  wallBounce()
-  collisionDetection()
+var lastTime = null
+function gameLoop (currentTime) {
+  if (lastTime !== null) {
+    var dt = (currentTime - lastTime)
+
+    paddleMove(dt)
+    ballMove(dt)
+
+    wallBounce()
+    collisionDetection()
+  }
+
   draw()
-  
+
+  lastTime = currentTime
   window.requestAnimationFrame(gameLoop)
 }
 
