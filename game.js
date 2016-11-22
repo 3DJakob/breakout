@@ -7,6 +7,7 @@ var x = canvas.width / 2
 var y = canvas.height - 30
 var dx = 2
 var dy = -2
+var currentSpeed = 2
 
 // Paddle variables
 var paddleHeight = 10
@@ -28,6 +29,7 @@ var brickOffsetTop = 30
 var brickOffsetLeft = 30
 
 var score = 0
+var rPressed = false
 
 var bricks = []
 for (var c = 0; c < brickColumnCount; c++) {
@@ -124,9 +126,19 @@ function wallBounce () {
     if (x > paddleX && x < paddleX + paddleWidth) {
       dy = -dy
     } else if (y + dy > canvas.height - ballRadius) {
-      window.alert('GAME OVER')
-      window.location.reload()
-      setTimeout(function () {}, 100)
+      bricks = []
+      for (var c = 0; c < brickColumnCount; c++) {
+        bricks[c] = []
+        for (var r = 0; r < brickRowCount; r++) {
+          bricks[c][r] = { x: 0, y: 0, status: 1 }
+        }
+      }
+      x = canvas.width / 2
+      y = canvas.height - 30
+      dx = 2
+      dy = -2
+      currentSpeed = 2
+      score = 0
     }
   }
   if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
@@ -139,6 +151,8 @@ function keyDownHandler (e) {
     rightPressed = true
   } else if (e.keyCode === 37) {
     leftPressed = true
+  } else if (e.keyCode === 82) {
+    rPressed = true
   }
 }
 
@@ -147,6 +161,8 @@ function keyUpHandler (e) {
     rightPressed = false
   } else if (e.keyCode === 37) {
     leftPressed = false
+  } else if (e.keyCode === 82) {
+    rPressed = false
   }
 }
 
@@ -163,12 +179,31 @@ function draw () {
 
   // ctx.font = '20px sans-serif'
   // ctx.fillText('Speed: ' + paddleSpeed, 10, 30) // Speed not accurate?
-
+  ctx.textAlign = 'center'
   ctx.font = '20px sans-serif'
-  ctx.fillText('Score: ' + score, 7, 23)
+  ctx.fillText('Score: ' + score, 43, 23)
+  var difficulty = currentSpeed - 1
+  ctx.fillText('Difficulty: ' + difficulty, 150, 23)
   if (score === brickRowCount * brickColumnCount) {
-    window.alert('YOU WON!')
-    window.location.reload()
+    ctx.fillText('YOU WON!', canvas.width / 2, canvas.height / 2)
+    ctx.fillText('Press R to play next difficulty!', canvas.width / 2, canvas.height * 2 / 3)
+    dx = 0
+    dy = 0
+    if (rPressed) {
+      bricks = []
+      for (var c = 0; c < brickColumnCount; c++) {
+        bricks[c] = []
+        for (var r = 0; r < brickRowCount; r++) {
+          bricks[c][r] = { x: 0, y: 0, status: 1 }
+        }
+      }
+      x = canvas.width / 2
+      y = canvas.height - 50
+      currentSpeed = currentSpeed + 1
+      dx = currentSpeed
+      dy = -currentSpeed
+      score = 0
+    }
   }
 }
 
