@@ -80,7 +80,7 @@ function collisionDetection () {
     for (var r = 0; r < brickRowCount; r++) {
       var b = bricks[c][r]
       if (b.status === 1) {
-        if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+        if (x - ballRadius > b.x && x - ballRadius < b.x + brickWidth && y + ballRadius > b.y && y - ballRadius < b.y + brickHeight) {
           dy = -dy
           b.status = 0
           score += 1
@@ -120,10 +120,10 @@ function mouseMoveHandler (e) {
 function wallBounce () {
   if (y + dy < ballRadius) {
     dy = -dy
-  } else if (y + dy > canvas.height - ballRadius) {
+  } else if (y + dy > canvas.height - ballRadius - paddleHeight) {
     if (x > paddleX && x < paddleX + paddleWidth) {
       dy = -dy
-    } else {
+    } else if (y + dy > canvas.height - ballRadius) {
       window.alert('GAME OVER')
       window.location.reload()
       setTimeout(function () {}, 100)
