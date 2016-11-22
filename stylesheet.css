@@ -31,3 +31,7 @@ img {
 i {
   font-size: 10px;
 }
+
+.fa-mouse-pointer, .fa-arrow-right, .fa-arrow-left {
+  color: #0095DD;
+}

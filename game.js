@@ -37,6 +37,10 @@ for (var c = 0; c < brickColumnCount; c++) {
   }
 }
 
+document.addEventListener('keydown', keyDownHandler, false)
+document.addEventListener('keyup', keyUpHandler, false)
+document.addEventListener('mousemove', mouseMoveHandler, false)
+
 function drawBall () {
   ctx.beginPath()
   ctx.arc(x, y, ballRadius, 0, Math.PI * 2, false)
@@ -106,6 +110,13 @@ function paddleMove () {
   paddleX += paddleSpeed
 }
 
+function mouseMoveHandler (e) {
+  var relativeX = e.clientX - canvas.offsetLeft
+  if (relativeX > 0 && relativeX < canvas.width) {
+    paddleX = relativeX - paddleWidth / 2
+  }
+}
+
 function wallBounce () {
   if (y + dy < ballRadius) {
     dy = -dy
@@ -161,6 +172,4 @@ function draw () {
   }
 }
 
-document.addEventListener('keydown', keyDownHandler, false)
-document.addEventListener('keyup', keyUpHandler, false)
 setInterval(draw, 10)
