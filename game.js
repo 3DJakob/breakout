@@ -112,6 +112,11 @@ function paddleMove () {
   paddleX += paddleSpeed
 }
 
+function ballMove () {
+  x += dx
+  y += dy
+}
+
 function mouseMoveHandler (e) {
   var relativeX = e.clientX - canvas.offsetLeft
   if (relativeX > 0 && relativeX < canvas.width) {
@@ -171,11 +176,6 @@ function draw () {
   drawBall()
   drawPaddle()
   drawBricks()
-  paddleMove()
-  x += dx
-  y += dy
-  wallBounce()
-  collisionDetection()
 
   // ctx.font = '20px sans-serif'
   // ctx.fillText('Speed: ' + paddleSpeed, 10, 30) // Speed not accurate?
@@ -207,4 +207,14 @@ function draw () {
   }
 }
 
-setInterval(draw, 10)
+function gameLoop () {
+  paddleMove()
+  ballMove()
+  wallBounce()
+  collisionDetection()
+  draw()
+  
+  window.requestAnimationFrame(gameLoop)
+}
+
+window.requestAnimationFrame(gameLoop)
