@@ -34,4 +34,5 @@ i {
 
 .fa-mouse-pointer, .fa-arrow-right, .fa-arrow-left {
   color: #0095DD;
+  padding: 10px;
 }
